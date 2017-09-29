@@ -11,27 +11,32 @@ class God extends Component {
    * iterate through props list
    */
   parseProps = (currentComponent) => {
-    console.log('# parseProps')
+    console.log('cur: ', currentComponent)
     let newProps = {}
-    const keys = Object.keys(currentComponent)
-    keys.forEach(key => {
-      // Functions
-      if (typeof currentComponent[key] === 'function') newProps[key] = '' + currentComponent[key]
-      // Objects
-      else if (typeof currentComponent[key] === 'object') newProps[key] = currentComponent[key]
-      // Children - TODO flatten this object
+    for (let key in currentComponent) {
+      if (typeof currentComponent[key] === 'function') {
+        newProps[key] = 'fn()'
+        // console.log(currentComponent[key])
+        // newProps[key] = '' + currentComponent[key]
+        // console.log('key: ', key)
+        // console.log('newProps:', newProps[key])
+      }
       else if (key === 'children') {
         newProps[key] = new currentComponent[key].constructor
         if (Array.isArray(currentComponent[key])) {
           currentComponent[key].forEach(child => {
             newProps[key].push(child && child.type && child.type.name)
           })
+        } else {
+          newProps[key].name = currentComponent[key].type && currentComponent[key].type.name
         }
-        else newProps[key].name = currentComponent[key].type && currentComponent[key].type.name
+      } else if (typeof currentComponent[key] === 'object') {
+        newProps[key] = currentComponent[key]
+      } else {
+        newProps[key] = currentComponent[key]
       }
-      else newProps[key] = currentComponent[key]
-      return newProps
-    })
+    }
+    return newProps
   }
 
   /** Traverse through virtual DOM and add data to array */
@@ -96,6 +101,7 @@ class God extends Component {
     const dom = this._reactInternalInstance._renderedComponent._renderedChildren['.0']
     this.recursiveTraverse(dom, components)
     const data = { data: components, store: this.store }
+    console.log('SENDING: ', data)
     window.postMessage(JSON.parse(JSON.stringify(data)), '*')
   }
 
@@ -152,9 +158,9 @@ class God extends Component {
       else if (prop === 'children') {
         props[prop] = new node.memoizedProps[prop].constructor
         if (Array.isArray(node.memoizedProps[prop])) {
-        node.memoizedProps[prop].forEach(child => {
-        props[prop].push(child && child.type && child.type.name)
-        })
+          node.memoizedProps[prop].forEach(child => {
+            props[prop].push(child && child.type && child.type.name)
+          })
         }
         else props[prop].name = node.memoizedProps[prop].type && node.memoizedProps[prop].type.name
       }
@@ -184,7 +190,7 @@ class God extends Component {
     // experimental react 16 support
     if (this.version === '16.0.0') this.traverseGOD = this.traverse16
 
-    window.addEventListener('attached', e => {
+    window.addEventListener('reactsight', e => {
       console.log('detected event')
       this.traverseGOD()
     })
