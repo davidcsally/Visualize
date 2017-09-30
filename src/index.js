@@ -5,7 +5,6 @@ import ride from 'ride';
 class God extends Component {
   store = []
   version = null;
-
   /** TODO - flattening...
    * 
    * iterate through props list
@@ -186,7 +185,6 @@ class God extends Component {
   componentDidMount() {
     this.version = React.version
     console.log('version', this.version)
-
     // experimental react 16 support
     if (this.version === '16.0.0') this.traverseGOD = this.traverse16
 
@@ -210,4 +208,4 @@ class God extends Component {
   }
 }
 
-export default God;
+module.exports = God
