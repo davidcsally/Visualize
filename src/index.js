@@ -9,7 +9,7 @@ class God extends Component {
    *
    * iterate through props list
    */
- parseProps = (currentComponent) => {
+  parseProps = (currentComponent) => {
     let newProps = {}
     for (let key in currentComponent) {
       if (typeof currentComponent[key] === 'function') {
@@ -183,7 +183,6 @@ class God extends Component {
    * can draw when it first loads
    */
   componentDidMount() {
-    
     this.version = React.version
     console.log('version', this.version)
     // experimental react 16 support
@@ -196,6 +195,12 @@ class God extends Component {
     ride(React.Component.prototype, 'setState')
       .after(() => { this.traverseGOD() });
     console.log('This: ', this)
+
+    // attach global var to window
+    window._REACTSIGHTATTACHED = true
+
+    console.log('Attached: ', window._REACTSIGHTATTACHED)
+
   }
   // Render the children of the props
   render() {
